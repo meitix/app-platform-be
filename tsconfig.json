@@ -1,9 +1,15 @@
 {
     "compilerOptions": {
         "module": "commonjs",
+        "lib": ["es2015", "DOM"],
         "target": "es5",
         "outDir": "dist",
-        "noImplicitAny": true
+        "noImplicitAny": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "moduleResolution": "node",
+        "allowUnreachableCode": true,
+        "types": ["reflect-metadata"]
     },
     "include": [
         "src/**/*"

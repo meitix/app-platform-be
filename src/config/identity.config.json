@@ -1,0 +1,14 @@
+{
+  "tokenLife": 150000000,
+  "secretKey": "this-is-jwt-secret-key-of-the-project-532kjbfd60)@_y89dfsbm,-30203@sk4%%%%^",
+  "validations": {
+    "authData": {
+      "password": {
+        "regex": "^.{6,}$"
+      },
+      "username": {
+        "regex": "^\\w{1,}@\\w{1,}\\.\\w{1,}$"
+      }
+    }
+  }
+}

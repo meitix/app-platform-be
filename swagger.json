@@ -1,0 +1,728 @@
+{
+	"basePath": "/",
+	"consumes": [
+		"application/json"
+	],
+	"definitions": {
+		"IPaymentPlan": {
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"price": {
+					"type": "number",
+					"format": "double"
+				},
+				"dateRange": {
+					"type": "number",
+					"format": "double"
+				},
+				"isActive": {
+					"type": "boolean"
+				},
+				"description": {
+					"type": "string",
+					"x-nullable": true
+				}
+			},
+			"required": [
+				"name",
+				"price",
+				"dateRange",
+				"isActive"
+			],
+			"type": "object",
+			"additionalProperties": false
+		},
+		"IApplication": {
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"url": {
+					"type": "string"
+				},
+				"isActive": {
+					"type": "boolean"
+				}
+			},
+			"required": [
+				"name",
+				"url",
+				"isActive"
+			],
+			"type": "object",
+			"additionalProperties": false
+		},
+		"IAuthResult": {
+			"properties": {
+				"user": {
+					"additionalProperties": true,
+					"type": "object"
+				},
+				"token": {
+					"type": "string",
+					"description": "Access token which should be used for authorization"
+				},
+				"refreshToken": {
+					"type": "string",
+					"description": "Use for refreshing the token after expire time."
+				},
+				"expiresIn": {
+					"type": "number",
+					"format": "double",
+					"description": "Seconds remaining for expiring the token."
+				}
+			},
+			"required": [
+				"user",
+				"token",
+				"refreshToken",
+				"expiresIn"
+			],
+			"type": "object",
+			"additionalProperties": false
+		},
+		"IAuthData": {
+			"properties": {
+				"username": {
+					"type": "string"
+				},
+				"password": {
+					"type": "string"
+				}
+			},
+			"required": [
+				"username",
+				"password"
+			],
+			"type": "object",
+			"additionalProperties": false
+		},
+		"ITokenPair": {
+			"properties": {
+				"token": {
+					"type": "string"
+				},
+				"refreshToken": {
+					"type": "string"
+				}
+			},
+			"required": [
+				"token",
+				"refreshToken"
+			],
+			"type": "object",
+			"additionalProperties": false
+		},
+		"PaymentStatus": {
+			"enum": [
+				0,
+				10
+			],
+			"type": "integer"
+		},
+		"IPaymentResult": {
+			"properties": {
+				"status": {
+					"$ref": "#/definitions/PaymentStatus"
+				},
+				"transactionKey": {
+					"additionalProperties": true,
+					"type": "object"
+				},
+				"thirdPartyData": {
+					"type": "string",
+					"x-nullable": true
+				}
+			},
+			"required": [
+				"status",
+				"transactionKey"
+			],
+			"type": "object",
+			"additionalProperties": false
+		},
+		"IInvoice": {
+			"properties": {
+				"user": {
+					"$ref": "#/definitions/IInvoiceOwner"
+				},
+				"plan": {
+					"$ref": "#/definitions/IPaymentPlan"
+				},
+				"payPrice": {
+					"type": "number",
+					"format": "double"
+				},
+				"createDate": {
+					"type": "string",
+					"format": "date-time",
+					"x-nullable": true
+				},
+				"paymentStatus": {
+					"$ref": "#/definitions/PaymentStatus",
+					"x-nullable": true
+				},
+				"description": {
+					"type": "string",
+					"x-nullable": true
+				}
+			},
+			"required": [
+				"user",
+				"plan",
+				"payPrice"
+			],
+			"type": "object",
+			"additionalProperties": false
+		},
+		"IInvoiceOwner": {
+			"properties": {
+				"id": {
+					"type": "string"
+				},
+				"invoices": {
+					"items": {
+						"$ref": "#/definitions/IInvoice"
+					},
+					"type": "array"
+				}
+			},
+			"required": [
+				"id",
+				"invoices"
+			],
+			"type": "object",
+			"additionalProperties": false
+		},
+		"IUser": {
+			"properties": {
+				"id": {
+					"type": "string"
+				},
+				"firstName": {
+					"type": "string",
+					"x-nullable": true
+				},
+				"lastName": {
+					"type": "string",
+					"x-nullable": true
+				},
+				"email": {
+					"type": "string"
+				},
+				"gender": {
+					"type": "string",
+					"enum": [
+						"male",
+						"female"
+					],
+					"x-nullable": true
+				},
+				"mobile": {
+					"type": "string",
+					"x-nullable": true
+				},
+				"expireDate": {
+					"type": "string",
+					"format": "date-time",
+					"x-nullable": true
+				},
+				"registerDate": {
+					"type": "string",
+					"format": "date-time",
+					"x-nullable": true
+				},
+				"invoices": {
+					"items": {
+						"$ref": "#/definitions/IInvoice"
+					},
+					"type": "array",
+					"x-nullable": true
+				}
+			},
+			"required": [
+				"id",
+				"email"
+			],
+			"type": "object",
+			"additionalProperties": false
+		}
+	},
+	"info": {
+		"title": "app-platform-be",
+		"version": "1.0.0",
+		"description": "app platform backend",
+		"license": {
+			"name": "ISC"
+		}
+	},
+	"paths": {
+		"/payment-plans": {
+			"get": {
+				"operationId": "List",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"items": {
+								"$ref": "#/definitions/IPaymentPlan"
+							},
+							"type": "array"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "filter",
+						"required": false,
+						"type": "string"
+					}
+				]
+			},
+			"post": {
+				"operationId": "Create",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/IPaymentPlan"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "plan",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/IPaymentPlan"
+						}
+					}
+				]
+			}
+		},
+		"/payment-plans/{id}": {
+			"get": {
+				"operationId": "Find",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/IPaymentPlan"
+						}
+					}
+				},
+				"description": "the methods down below should be forbidden for none admin users.",
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"format": "double",
+						"type": "number"
+					}
+				]
+			},
+			"put": {
+				"operationId": "Update",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"additionalProperties": true,
+							"type": "object"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"format": "double",
+						"type": "number"
+					},
+					{
+						"in": "body",
+						"name": "plan",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/IPaymentPlan"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "Delete",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"additionalProperties": true,
+							"type": "object"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"format": "double",
+						"type": "number"
+					}
+				]
+			}
+		},
+		"/applications": {
+			"get": {
+				"operationId": "List",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"items": {
+								"$ref": "#/definitions/IApplication"
+							},
+							"type": "array"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "filter",
+						"required": false,
+						"type": "string"
+					}
+				]
+			},
+			"post": {
+				"operationId": "Create",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/IApplication"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "plan",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/IApplication"
+						}
+					}
+				]
+			}
+		},
+		"/applications/{id}": {
+			"get": {
+				"operationId": "Find",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/IApplication"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"format": "double",
+						"type": "number"
+					}
+				]
+			},
+			"put": {
+				"operationId": "Update",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"additionalProperties": true,
+							"type": "object"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"format": "double",
+						"type": "number"
+					},
+					{
+						"in": "body",
+						"name": "plan",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/IApplication"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "Delete",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"additionalProperties": true,
+							"type": "object"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"format": "double",
+						"type": "number"
+					}
+				]
+			}
+		},
+		"/auth/register": {
+			"post": {
+				"operationId": "Register",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/IAuthResult"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "authData",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/IAuthData"
+						}
+					}
+				]
+			}
+		},
+		"/auth/login": {
+			"post": {
+				"operationId": "Login",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/IAuthResult"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "authData",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/IAuthData"
+						}
+					}
+				]
+			}
+		},
+		"/auth/reset-password": {
+			"post": {
+				"operationId": "ResetPassword",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "body",
+						"schema": {
+							"properties": {
+								"username": {
+									"type": "string"
+								}
+							},
+							"title": "ResetPasswordBody",
+							"type": "object",
+							"required": [
+								"username"
+							]
+						}
+					}
+				]
+			}
+		},
+		"/auth/token/{refreshToken}": {
+			"get": {
+				"operationId": "RenewToken",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/ITokenPair"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "refreshToken",
+						"required": true,
+						"type": "string"
+					}
+				]
+			}
+		},
+		"/payment/buy/{planId}": {
+			"post": {
+				"operationId": "Buy",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/IPaymentResult"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "planId",
+						"required": true,
+						"type": "string"
+					}
+				]
+			}
+		},
+		"/payment/verify": {
+			"get": {
+				"operationId": "Verify",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"302": {
+						"description": "Redirect",
+						"schema": {
+							"additionalProperties": true,
+							"type": "object"
+						}
+					}
+				},
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/users": {
+			"post": {
+				"operationId": "Create",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/IUser"
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "user",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/IUser"
+						}
+					}
+				]
+			}
+		}
+	},
+	"produces": [
+		"application/json"
+	],
+	"swagger": "2.0",
+	"securityDefinitions": {}
+}
