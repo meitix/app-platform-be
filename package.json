@@ -10,7 +10,6 @@
   "scripts": {
     "build": "cross-env NODE_ENV=prod tsc",
     "start": "nodemon src/index.ts",
-    "start:dev": "ts-node src/index.ts",
     "test": "cross-env NODE_ENV=test npm run mocha --recursive ./src/**/*.test.ts",
     "mocha": "mocha -r ts-node/register",
     "generate": "tsoa routes && tsoa swagger"

@@ -15,7 +15,7 @@ async function createServer() {
   const appLogger = config.mode === 'test' ? new MockLogger() : applicationLogger;
   appLogger.info('userDirectory is using the following configurations:', config);
 
-  const userDirectory = new UserDirectoryServer({ dbConfig: config.dbConfig, logger: appLogger as any });
+  const userDirectory = new UserDirectoryServer({ dbConfig: config.dbConfig, logger: console as any });
 
   userDirectory.enableCORS();
 
@@ -26,7 +26,7 @@ async function createServer() {
   if (config.mode !== 'prod' && config.mode !== 'production') {
     userDirectory.enableDocumentation('/docs');
   } else {
-    userDirectory.enableRequestLogging(requestLogger as any);
+    userDirectory.enableRequestLogging(console);
   }
 
   /** Start the server */
